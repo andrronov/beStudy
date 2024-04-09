@@ -16,6 +16,11 @@ const routes = [
       name: "collection",
       component: () => import('../pages/testCollection.vue'),
    },
+   {
+      path: "/edit/:id",
+      name: "edit",
+      component: () => import('../pages/editCollection.vue'),
+   },
 ]
 
 const router = createRouter({

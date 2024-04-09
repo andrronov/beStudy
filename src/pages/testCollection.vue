@@ -2,7 +2,7 @@
   <homeTemplate :title="'Collection'">
    <loading v-if="isLoading" />
    
-   <div v-if="collection" class="w-full flex flex-col items-center h-full px-2 gap-8">
+   <div v-if="collection.length > 0 && typeof collection == 'object'" class="w-full flex flex-col items-center h-full px-2 gap-8">
       <div v-for="test in collection" :key="test.id" class="flex flex-col w-full items-center">
          <div class="bg-gradient-to-r from-indigo-700 via-blue-600 to-indigo-500 w-full rounded-xl rounded-b-none p-4 text-white sm:text-2xl">
             <p class="text-center font-medium mb-2 text-3xl">{{ test.name }}</p>
@@ -17,13 +17,13 @@
             </div>
          </div>
          <div class="flex flex-row items-center rounded-xl rounded-t-none border-indigo-500 border-2 justify-between w-full">
-            <div class="w-1/3 flex justify-center h-full cursor-pointer hover:bg-indigo-300">
+            <div class="w-1/3 flex justify-center h-full cursor-pointer hover:bg-green-300">
                <CheckIcon class="sm:w-10 sm:h-10 w-8 h-8" />
             </div>
-            <div class="w-1/3 flex justify-center h-full cursor-pointer border-x-2 border-indigo-800 hover:bg-indigo-300">
+            <div @click="router.push(`/edit/${test.id}`)" class="w-1/3 flex justify-center h-full cursor-pointer border-x-2 border-indigo-800 hover:bg-indigo-300">
                <PencilSquareIcon class="sm:w-10 sm:h-10 w-8 h-8" />
             </div>
-            <div @click="deleteTest(test.id)" class="w-1/3 flex justify-center h-full cursor-pointer hover:bg-indigo-300">
+            <div @click="deleteTest(test.id)" class="w-1/3 flex justify-center h-full cursor-pointer hover:bg-red-300">
                <TrashIcon class="sm:w-10 sm:h-10 w-8 h-8" />
             </div>
          </div>
