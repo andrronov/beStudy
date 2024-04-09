@@ -26,6 +26,8 @@ export default {
         xl: "1280px"
     },
   },
-  plugins: [],
+  plugins: [
+    '@tailwindcss/forms'
+  ],
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}']
 }

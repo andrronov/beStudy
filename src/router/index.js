@@ -11,6 +11,11 @@ const routes = [
       name: "login",
       component: () => import('../pages/loginPage.vue'),
    },
+   {
+      path: "/collection",
+      name: "collection",
+      component: () => import('../pages/testCollection.vue'),
+   },
 ]
 
 const router = createRouter({
