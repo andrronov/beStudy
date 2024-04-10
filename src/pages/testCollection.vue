@@ -2,12 +2,12 @@
   <homeTemplate :title="'Collection'">
    <loading v-if="isLoading" />
    
-   <div v-if="collection.length > 0 && typeof collection == 'object'" class="w-full flex flex-col items-center h-full px-2 gap-8">
+   <div v-if="collection.length > 0 && typeof collection == 'object' || isLoading" class="w-full flex flex-col items-center h-full px-2 gap-8">
       <div v-for="test in collection" :key="test.id" class="flex flex-col w-full items-center">
          <div class="bg-gradient-to-r from-indigo-700 via-blue-600 to-indigo-500 w-full rounded-xl rounded-b-none p-4 text-white sm:text-2xl">
             <p class="text-center font-medium mb-2 text-3xl">{{ test.name }}</p>
             <div class="flex flex-row items-center justify-between w-full">
-               <p class="">5 questions</p>
+               <p class="">{{ test.qstn_answr.length }} questions</p>
                <p>{{ useTimeAgo(test.created_at) }}</p>
                
             </div>
@@ -56,7 +56,7 @@ const collection = ref([])
 
 async function getCollection() {
    const user = await supabase.auth.getUser()
-   const {data, error} = await supabase.from('tests').select().eq('author', user.data.user.id)
+   const {data, error} = await supabase.from('tests').select('*, qstn_answr(*)').eq('author', user.data.user.id)
    if(!error){
       isLoading.value = false
       collection.value = data
