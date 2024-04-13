@@ -1,5 +1,5 @@
 <template>
-   <modalComponent v-if="isModalAddQuestion" class="flex flex-col items-center">
+   <modalComponent v-if="isModalAddQuestion || isModalEditQuestion" class="flex flex-col items-center">
    
       <div v-if="isTestDefault">
          def test
@@ -19,16 +19,17 @@
                 <div class="flex flex-col gap-2">
                   <input class="my-4 cursor-pointer" type="file" />
                   <loading class="my-4" v-if="imgLoad" />
-                  <img v-if="form.photo" :src="form.photo" class="my-4" alt="photo preview">
+                  <img v-if="form.photo" :src="form.photo" class="my-4 max-h-16 object-contain" alt="photo preview">
                 </div>
                 <button @click="form.photo = null" type="button" class="rounded-xl p-2 bg-indigo-600 text-white text-xl">Delete</button>
                </label>
              </div>
             <!-- <input type="file" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mt-4" /> -->
          </div>
-         <button @click="addQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Add question</button>
+         <button v-if="isModalAddQuestion" @click="addQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Add question</button>
+         <button v-else @click="editQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Edit question</button>
          <p v-bind="errorLog" class="text-lg text-red-500">{{ errorLog }}</p>
-         <button @click="isModalAddQuestion = false" class="rounded-xl p-2 bg-indigo-600 text-white text-xl absolute bottom-6">Back</button>
+         <button @click="isModalAddQuestion = false, isModalEditQuestion = false, form.answer = '', form.question = '', form.photo = null" class="rounded-xl p-2 bg-indigo-600 text-white text-xl absolute bottom-6">Back</button>
       </div>
 
    </modalComponent>
@@ -46,8 +47,12 @@
             <img :src="question.img" class="w-auto h-14 object-contain" alt="">
          </div>
          <div class="flex flex-row items-center w-full justify-around bg-white text-indigo-900 py-2 rounded-b-xl">
-               <TrashIcon class="sm:w-10 sm:h-10 w-8 h-8" />
-               <PencilSquareIcon class="sm:w-10 sm:h-10 w-8 h-8" />
+               <div class="w-1/2 flex justify-center cursor-pointer hover:bg-gray-200 h-full" @click="deleteQuestion(question.id)">
+                  <TrashIcon class="sm:w-10 sm:h-10 w-8 h-8" />
+               </div>
+               <div class="w-1/2 flex justify-center cursor-pointer hover:bg-gray-200 h-full" @click="getQuestion(question.id)">
+                  <PencilSquareIcon class="sm:w-10 sm:h-10 w-8 h-8" />
+               </div>
          </div>
       </div>
    </div>
@@ -60,6 +65,7 @@
   </homeTemplate>
 
   <loadScreen v-if="loadingScreen" />
+  <errorScreen :error="errorLog" v-if="errorLog" />
 </template>
 
 <script setup>
@@ -71,6 +77,7 @@ import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid'
 import { supabase } from '../lib/supabaseClient';
 import { onMounted, ref, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import errorScreen from '../components/UI/errorScreen.vue';
 
 const form = reactive({
    question: '',
@@ -84,8 +91,10 @@ const imgLoad = ref(false)
 const questions = ref(null)
 const errorLog = ref(null)
 const isModalAddQuestion = ref(false)
+const isModalEditQuestion = ref(false)
 const isTestDefault = ref()
 const loadingScreen = ref(false)
+const questionId = ref(null)
 
 async function getQuestions(){
    isLoading.value = true
@@ -97,7 +106,6 @@ async function getQuestions(){
       isLoading.value = false
       errorLog.value = error
    }
-   console.log(data, error);
 }
 
 async function getTestType(){
@@ -119,13 +127,54 @@ async function addPhoto(ev){
 }
 
 async function addQuestion(){
+   const user = await supabase.auth.getSession()
    loadingScreen.value = true
-   const {data, error} = await supabase.from('qstn_answr').insert({question: form.question, answer: form.answer, img: form.photo, test_id: route.params.id})
+   const {data, error} = await supabase.from('qstn_answr').insert({question: form.question, answer: form.answer, img: form.photo, test_id: route.params.id, author: user.data.session.user.id})
    if(!error){
       loadingScreen.value = false
       isModalAddQuestion.value = false
       getQuestions()
    } else {
+      loadingScreen.value = false
+      errorLog.value = error
+   }
+}
+async function deleteQuestion(qID){
+   const isAgreed = confirm('Are you sure you want to delete this question?')
+   if(isAgreed){
+      loadingScreen.value = true
+      const { error } = await supabase.from('qstn_answr').delete().eq('id', qID)
+      if(!error){
+         getQuestions()
+         loadingScreen.value = false
+      } else {
+         errorLog.value = error
+         loadingScreen.value = false
+      }
+   }
+}
+async function getQuestion(qID){
+   loadingScreen.value = true
+   questionId.value = qID
+   const {data, error} = await supabase.from('qstn_answr').select('question, answer, img').eq('id', qID)
+   if(!error){
+      form.answer = data[0].answer
+      form.question = data[0].question
+      form.photo = data[0].img
+      isModalEditQuestion.value = true
+      loadingScreen.value = false
+   } else {
+      errorLog.value = error
+      loadingScreen.value = false
+   }
+}
+async function editQuestion(){
+   loadingScreen.value = true
+   const {data, error} = await supabase.from('qstn_answr').update({question: form.question, answer: form.answer, img: form.photo}).eq('id', questionId.value)
+   if(!error){
+      loadingScreen.value = false
+      isModalEditQuestion.value = false
+   }else{
       loadingScreen.value = false
       errorLog.value = error
    }

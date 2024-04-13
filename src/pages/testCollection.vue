@@ -17,7 +17,7 @@
             </div>
          </div>
          <div class="flex flex-row items-center rounded-xl rounded-t-none border-indigo-500 border-2 justify-between w-full">
-            <div class="w-1/3 flex justify-center h-full cursor-pointer hover:bg-green-300">
+            <div @click="router.push(`test/${test.id}`)" class="w-1/3 flex justify-center h-full cursor-pointer hover:bg-green-300">
                <CheckIcon class="sm:w-10 sm:h-10 w-8 h-8" />
             </div>
             <div @click="router.push(`/edit/${test.id}`)" class="w-1/3 flex justify-center h-full cursor-pointer border-x-2 border-indigo-800 hover:bg-indigo-300">
