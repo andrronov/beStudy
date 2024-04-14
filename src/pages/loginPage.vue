@@ -1,4 +1,7 @@
 <template>
+  <loadScreen v-if="isLoadScreen" />
+
+  
   <div class="w-full h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-200 via-purple-300 to-indigo-400">
 
   <div v-if="isLogin" class="flex min-h-full flex-1 flex-col w-full justify-center px-6 py-12 lg:px-8">
@@ -35,7 +38,7 @@
       </form>
 
       <!-- <div class="flex items-center justify-center mt-8">
-        <button class="px-4 bg-indigo-700 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
+        <button @click="signInWithGoogle" class="px-4 bg-indigo-700 py-2 border text-white flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
             <img class="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo">
             <span>Login with Google</span>
         </button>
@@ -47,6 +50,7 @@
       </p>
     </div>
   </div>
+  
 
   <!-- REGISTRATION -->
 
@@ -66,6 +70,13 @@
         </div>
 
         <div>
+          <label class="block text-sm font-medium leading-6 text-gray-900">Username</label>
+          <div class="mt-2">
+            <input v-model="form.userName" id="name" name="name" type="name" autocomplete="name" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+          </div>
+        </div>
+
+        <div>
           <div class="flex items-center justify-between">
             <label class="block text-sm font-medium leading-6 text-gray-900">Password</label>
             <div class="text-sm">
@@ -80,6 +91,7 @@
         <div>
           <button @click.prevent="signUpUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</button>
         </div>
+        <p v-if="errorLog" class="text-red-600 text-center p-2 bg-gray-100/70">{{ errorLog }}</p>
       </form>
 
       <p class="mt-10 text-center text-sm text-gray-500">
@@ -91,40 +103,61 @@
 </template>
 
 <script setup>
+import homeTemplate from '../components/UI/homeTemplate.vue';
+import loadScreen from '../components/UI/loadScreen.vue';
 import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import homeTemplate from '../components/UI/homeTemplate.vue';
 import { supabase } from '../lib/supabaseClient';
 
 const errorLog = ref(null)
 const router = useRouter()
+const isLoadScreen = ref(false)
 const isLogin = ref(true);
 const form = reactive({
   regEmail: null,
   regPassword: null,
   loginEmail: null,
-  loginPassword: null
+  loginPassword: null,
+  userName: null,
 })
 
 // to finish
 async function signUpUser(){
-  if(form.regEmail && form.regPassword){
-    const { data, error } = await supabase.auth.signUp(
-      {
+  if(form.regEmail && form.regPassword && form.userName){
+    isLoadScreen.value = true
+    errorLog.value = null
+    const { data, error } = await supabase.auth.signUp({
         email: form.regEmail,
         password: form.regPassword,
         options: {
-          emailRedirectTo: 'http://localhost:5173/home'
+          data: {
+            username: form.userName,
+        },
+          emailRedirectTo: 'http://localhost:5173/#/home'
         }
-      }
-    )
-    console.log(data, error);
-  } console.log('aaaa', form);
+      })
+    if(!error){
+      isLoadScreen.value = false
+      errorLog.value = 'Check your email!'
+      setTimeout(() => {
+        errorLog.value = null
+      }, 10000)
+    } else {
+      isLoadScreen.value = false
+      errorLog.value = error
+    }
+  } else {
+    errorLog.value = 'Fill in all the fields'
+    setTimeout(() => {
+      errorLog.value = null
+    }, 10000)
+  }
 }
 
 async function loginUser(){
   if(form.loginEmail && form.loginPassword){
     errorLog.value = null
+    isLoadScreen.value = true
     const { data, error } = await supabase.auth.signInWithPassword(
       {
         email: form.loginEmail,
@@ -132,13 +165,20 @@ async function loginUser(){
       }
     )
     if(!error){
+      isLoadScreen.value = false
       router.push('/home')
     } else{
+      isLoadScreen.value = false
       errorLog.value = error
       setTimeout(() => {
         errorLog.value = null
-      }, 5000);
+      }, 5000)
     }
+  } else {
+    errorLog.value = 'Fill in all the fields'
+    setTimeout(() => {
+      errorLog.value = null
+    }, 10000)
   }
 }
 

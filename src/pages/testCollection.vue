@@ -12,7 +12,7 @@
                
             </div>
             <div class="flex flex-row items-center justify-between w-full">
-               <p>name</p>
+               <p>{{ test.profiles.username }}</p>
                <p>ID: {{ test.id }}</p>
             </div>
          </div>
@@ -56,7 +56,7 @@ const collection = ref([])
 
 async function getCollection() {
    const user = await supabase.auth.getUser()
-   const {data, error} = await supabase.from('tests').select('*, qstn_answr(*)').eq('author', user.data.user.id)
+   const {data, error} = await supabase.from('tests').select('*, qstn_answr(*), profiles(username)').eq('author', user.data.user.id)
    if(!error){
       isLoading.value = false
       collection.value = data
@@ -64,6 +64,7 @@ async function getCollection() {
       isLoading.value = false
       errorLog.value = error
    }
+   console.log(data, error);
 }
 
 async function deleteTest(id) {

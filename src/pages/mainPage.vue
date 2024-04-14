@@ -27,7 +27,7 @@
   </modalComponent>
 
   <homeTemplate :title="'beStudy'" class="text-xl sm:text-2xl">
-    <p class="mb-8">Welcome, Andrew!</p>
+    <p class="mb-8">Welcome, {{ userName || '... ' }}!</p>
     <button @click="isCreateTest = true" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Create collection</button>
     <button @click="router.push('/collection')" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Edit collections</button>
     <button @click="isTakeTest = true" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Take a test</button>
@@ -35,13 +35,16 @@
     <button @click="logOutUser" class="bg-indigo-900 text-white p-2 rounded-xl text-xl absolute bottom-8">Log out</button>
 
   </homeTemplate>
+
+  <loadScreen v-if="isLoadScreen" />
 </template>
 
 <script setup>
 import homeTemplate from '../components/UI/homeTemplate.vue';
 import modalComponent from '../components/modalComponent.vue';
 import loading from '../components/UI/loading.vue';
-import { ref } from 'vue'
+import loadScreen from '../components/UI/loadScreen.vue';
+import { ref, onBeforeMount } from 'vue'
 import { supabase } from '../lib/supabaseClient';
 import { useRouter } from 'vue-router';
 
@@ -52,6 +55,8 @@ const testName = ref(null)
 const isLoading = ref(false)
 const errorLog = ref(null)
 const inputTestID = ref('')
+const userName = ref(null)
+const isLoadScreen = ref(false)
 
 async function createTest(){
   isLoading.value = true
@@ -69,9 +74,21 @@ async function createTest(){
 }
 
 async function logOutUser(){
-  await supabase.auth.signOut({ scope: 'local' })
-  router.push('login')
+  const isAgreed = confirm('Are you sure you want to log out?')
+  if(isAgreed){
+    isLoadScreen.value = true
+    await supabase.auth.signOut({ scope: 'local' })
+    router.push('login')
+  }
 }
+
+async function getUserName(){
+  userName.value = (await supabase.auth.getUser()).data.user.user_metadata.username
+}
+
+onBeforeMount(() => {
+  getUserName()
+})
 </script>
 
 <style>
