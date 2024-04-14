@@ -2,9 +2,27 @@
   <!-- <mainPage /> -->
   <modalComponent v-if="isCreateTest">
     <div class="w-full z-40">
-      <div class="max-w-7xl mx-auto flex flex-col items-center space-y-4 px-2">
+      <div class="max-w-7xl mx-auto flex flex-col items-center gap-4 px-2">
         <label for="testName" class="text-xl font-semibold">Test name</label>
         <input @keydown.enter="createTest" v-model="testName" type="text" id="testName" class="w-full text-black sm:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+        <div class="w-full flex flex-col items-center my-4 justify-between gap-4">
+          <p class="text-xl font-semibold">Select test type:</p>
+          <div class="flex flex-row items-center justify-between">
+            <div :class="isTestDefault ? 'border-4 bg-indigo-800' : 'border-2 bg-inherit'" @click="isTestDefault = true" class="w-[48%] min-h-72 flex text-center flex-col items-center p-2 gap-2 border-white rounded-xl text-white">
+              <p class="text-lg font-medium">Training</p>
+              <p>In this test you can practice: look through the questions, see the answers to them and understand where you are strong and where you are weak</p>
+            </div>
+            <!-- take first line when second type of test will be done -->
+            <!-- <div @click="isTestDefault = false" class="w-[48%] min-h-72 flex relative text-center flex-col items-center p-2 gap-2 border-2 border-white rounded-xl text-white"> -->
+            <div class="w-[48%] min-h-72 flex relative text-center flex-col items-center p-2 gap-2 border-2 border-white rounded-xl text-white">
+              <p class="text-lg font-medium">Full power</p>
+              <p class="text-gray-200">Now everything is serious: you will have a question and answer options. The assessment system, knowledge testing and the final result at the end of the test. Test your knowledge!</p>
+              <div class="absolute flex items-center justify-center w-full h-full bg-indigo-100/35 top-0 left-0">
+                <p class="text-black font-semibold text-2xl -rotate-6">In developing</p>
+              </div>
+            </div>
+          </div>
+        </div>
         <button @click="createTest" class="px-4 py-3 bg-indigo-600 font-semibold text-2xl text-white rounded-xl hover:bg-indigo-700">Create test</button>
         <button @click="isCreateTest = false" class="px-2 py-1 text-2xl bg-indigo-800 text-white rounded-xl absolute bottom-10 z-40 hover:bg-indigo-700">Back</button>
         <loading class="absolute bottom-36" v-if="isLoading" />
@@ -57,12 +75,13 @@ const errorLog = ref(null)
 const inputTestID = ref('')
 const userName = ref(null)
 const isLoadScreen = ref(false)
+const isTestDefault = ref(true)
 
 async function createTest(){
   isLoading.value = true
   const user = await supabase.auth.getUser()
   if(testName.value){
-    const {error} = await supabase.from('tests').insert({name: testName.value, author: user.data.user.id})
+    const {error} = await supabase.from('tests').insert({name: testName.value, author: user.data.user.id, is_default: isTestDefault.value})
     if(!error){
       isLoading.value = false
       router.push('/collection')
