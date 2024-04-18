@@ -1,11 +1,12 @@
 <template>
    <modalComponent v-if="isModalAddQuestion || isModalEditQuestion" class="flex flex-col items-center">
    
-      <div v-if="isTestDefault">
+      <!-- fix that -->
+      <!-- <div v-if="isTestDefault">
          def test
-      </div>
+      </div> -->
 
-      <div v-else class="flex flex-col w-full max-w-7xl px-2 items-center h-full justify-center gap-5 overflow-y-auto">
+      <div class="flex flex-col w-full max-w-7xl px-2 items-center h-full justify-center gap-5 overflow-y-auto">
          <div class="w-full text-center flex flex-col items-center gap-2">
             <label for="question" class="text-xl font-semibold">Question</label>
             <textarea v-model="form.question" rows="2" type="text" class="w-full rounded-xl p-1 text-black" />
@@ -92,7 +93,7 @@ const questions = ref(null)
 const errorLog = ref(null)
 const isModalAddQuestion = ref(false)
 const isModalEditQuestion = ref(false)
-const isTestDefault = ref()
+const isTestDefault = ref(false)
 const loadingScreen = ref(false)
 const questionId = ref(null)
 

@@ -78,7 +78,8 @@ const isLoadScreen = ref(false)
 const isTestDefault = ref(true)
 
 async function createTest(){
-  isLoading.value = true
+  if(testName.value?.length > 0){
+    isLoading.value = true
   const user = await supabase.auth.getUser()
   if(testName.value){
     const {error} = await supabase.from('tests').insert({name: testName.value, author: user.data.user.id, is_default: isTestDefault.value})
@@ -89,6 +90,12 @@ async function createTest(){
       isLoading.value = false
       errorLog.value = error
     }
+  }
+  } else {
+    errorLog.value = 'Fill in test name'
+    setTimeout(() => {
+      errorLog.value = null
+    }, 5000)
   }
 }
 
