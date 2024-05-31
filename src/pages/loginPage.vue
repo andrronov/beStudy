@@ -11,11 +11,11 @@
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6">
+      <form id="login_form" class="space-y-6">
         <div>
           <label class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
           <div class="mt-2">
-            <input v-model="form.loginEmail" id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <input v-model="form.loginEmail" id="email_input" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
 
@@ -23,16 +23,16 @@
           <div class="flex items-center justify-between">
             <label class="block text-sm font-medium leading-6 text-gray-900">Password</label>
             <div class="text-sm">
-              <a class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+              <a class="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">Forgot password?</a>
             </div>
           </div>
           <div class="mt-2">
-            <input @keydown.enter="loginUser" v-model="form.loginPassword" id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <input @keydown.enter="loginUser" v-model="form.loginPassword" id="password_input" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
 
         <div>
-          <button @click.prevent="loginUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
+          <button @click.prevent="loginUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 px-0.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
         </div>
         <p v-if="errorLog" class="text-red-600 text-center">{{ errorLog }}</p>
       </form>
@@ -46,7 +46,7 @@
 
       <p class="mt-10 text-center text-sm text-gray-500">
         Don't have account?
-        <a @click="isLogin = false" class="cursor-pointer font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register</a>
+        <a @click="isLogin = false" id="toSignupButton" class="cursor-pointer font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register</a>
       </p>
     </div>
   </div>
@@ -61,18 +61,18 @@
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6">
+      <form id="signup_form" class="space-y-6">
         <div>
           <label class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
           <div class="mt-2">
-            <input v-model="form.regEmail" id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <input v-model="form.regEmail" id="email" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
 
         <div>
           <label class="block text-sm font-medium leading-6 text-gray-900">Username</label>
           <div class="mt-2">
-            <input v-model="form.userName" id="name" name="name" type="name" autocomplete="name" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <input v-model="form.userName" id="name" name="name" type="name" autocomplete="name" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
 
@@ -80,16 +80,16 @@
           <div class="flex items-center justify-between">
             <label class="block text-sm font-medium leading-6 text-gray-900">Password</label>
             <div class="text-sm">
-              <a class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+              <a class="font-semibold cursor-pointer text-indigo-600 hover:text-indigo-500">Forgot password?</a>
             </div>
           </div>
           <div class="mt-2">
-            <input v-model="form.regPassword" id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <input v-model="form.regPassword" id="password" name="password" type="password" autocomplete="current-password" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
 
         <div>
-          <button @click.prevent="signUpUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</button>
+          <button @click.prevent="signUpUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 px-0.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</button>
         </div>
         <p v-if="errorLog" class="text-red-600 text-center p-2 bg-gray-100/70">{{ errorLog }}</p>
       </form>

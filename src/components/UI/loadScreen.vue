@@ -3,11 +3,3 @@
   <div class="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-purple-500"></div>
 </div>
 </template>
-
-<script setup>
-
-</script>
-
-<style>
-
-</style>
