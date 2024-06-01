@@ -6,6 +6,7 @@
          def test
       </div> -->
 
+      <!-- EDIT QUESTION -->
       <div class="flex flex-col w-full max-w-7xl px-2 items-center h-full justify-center gap-5 overflow-y-auto">
          <div class="w-full text-center flex flex-col items-center gap-2">
             <label for="question" class="text-xl font-semibold">Question</label>
@@ -14,17 +15,17 @@
          <div class="w-full text-center flex flex-col items-center gap-2">
             <label for="answer" class="text-xl font-semibold">Answer</label>
             <textarea v-model="form.answer" rows="3" type="text" class="w-full rounded-xl p-1 text-black" />
-            <div class="w-full flex flex-col mt-4">
-               <label @change="addPhoto" for="photo" class="text-xl font-semibold">
+            <form @change="addPhoto" enctype="multipart/form-data" class="w-full flex flex-col mt-4">
+               <label for="photo" class="text-xl font-semibold bg-gray-100/25 rounded-xl">
                 Photo
                 <div class="flex flex-col gap-2">
-                  <input class="my-4 cursor-pointer" type="file" />
+                  <input class="my-4 cursor-pointer" type="file" multiple />
                   <loading class="my-4" v-if="imgLoad" />
-                  <img v-if="form.photo" :src="form.photo" class="my-4 max-h-16 object-contain" alt="photo preview">
+                  <img v-for="(photo, index) in JSON.parse(form.photo)" :key="index" :src="photo" class="my-4 max-h-16 object-contain" :alt="photo">
                 </div>
                 <button @click="form.photo = null" type="button" class="rounded-xl p-2 bg-indigo-600 text-white text-xl">Delete</button>
                </label>
-             </div>
+            </form>
             <!-- <input type="file" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mt-4" /> -->
          </div>
          <button v-if="isModalAddQuestion" @click="addQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Add question</button>
@@ -61,7 +62,7 @@
       <p class="text-lg font-semibold">Don't any questions yet</p>
    </div>
 
-   <button @click="isModalAddQuestion = true" class="rounded-xl p-2 bg-indigo-600 text-white text-xl hover:bg-indigo-700">Add question</button>
+   <button v-if="!isLoading" @click="isModalAddQuestion = true" class="rounded-xl p-2 bg-indigo-600 text-white text-xl hover:bg-indigo-700">Add question</button>
    <button @click="router.push('/collection')" class="rounded-xl p-2 bg-indigo-600 text-white text-xl hover:bg-indigo-700">Back</button>
   </homeTemplate>
 
@@ -83,7 +84,7 @@ import errorScreen from '../components/UI/errorScreen.vue';
 const form = reactive({
    question: '',
    answer: '',
-   photo: null
+   photo: []
 })
 const router = useRouter()
 const route = useRoute()
@@ -116,11 +117,13 @@ async function getTestType(){
 
 async function addPhoto(ev){
   imgLoad.value = true
-  const photo = ev.target.files[0]
-  const newPhotoName = Date.now() + (Math.random() * 1000).toFixed()
-  const {data, error} = await supabase.storage.from('photos').upload(newPhotoName, photo)
-  if(!error){
-    form.photo = 'https://rjuhycmfqdscizgebqvt.supabase.co/storage/v1/object/public/photos/' + data.path
+  const photo = ev.target.files
+  for(let i = 0; i < Object.values(photo).length; i++){
+     const newPhotoName = Date.now() + (Math.random() * 1000).toFixed()
+     const {data, error} = await supabase.storage.from('photos').upload(newPhotoName, Object.values(photo)[i])
+     if(!error){
+       form.photo.push('https://rjuhycmfqdscizgebqvt.supabase.co/storage/v1/object/public/photos/' + data.path)
+     }
   }
   if(form.photo){
     imgLoad.value = false
@@ -130,11 +133,14 @@ async function addPhoto(ev){
 async function addQuestion(){
    const user = await supabase.auth.getSession()
    loadingScreen.value = true
-   const {data, error} = await supabase.from('qstn_answr').insert({question: form.question, answer: form.answer, img: form.photo, test_id: route.params.id, author: user.data.session.user.id})
+   const {data, error} = await supabase.from('qstn_answr').insert({question: form.question, answer: form.answer, img: JSON.stringify(form.photo), test_id: route.params.id, author: user.data.session.user.id})
    if(!error){
       loadingScreen.value = false
       isModalAddQuestion.value = false
       getQuestions()
+      form.question = '',
+      form.answer = '',
+      form.photo = null
    } else {
       loadingScreen.value = false
       errorLog.value = error

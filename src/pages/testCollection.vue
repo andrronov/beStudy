@@ -34,7 +34,7 @@
    <p v-else class="text-lg text-center">No tests yet</p>
 
    <loadScreen v-if="loadingScreen" />
-   <button @click="router.push('/home')" class="p-2 bg-indigo-200 text-black hover:bg-indigo-300 rounded-xl text-xl absolute bottom-10 z-40">back</button>
+   <button @click="router.push('/home')" class="p-2 bg-indigo-200 text-black hover:bg-indigo-300 rounded-xl text-xl">back</button>
   </homeTemplate>
 </template>
 

@@ -6,7 +6,7 @@
       <p class="text-2xl text-indigo-950 font-semibold">{{questions[currentQuestion]?.question}}</p>
       <div @click="openAnswer" id="answer" class="flex flex-col items-center gap-4 w-full" :class="isVisible ? 'blur-none' : 'blur-3xl'">
          <p>{{questions[currentQuestion]?.answer}}</p>
-         <img :src="questions[currentQuestion]?.img" class="object-contain max-h-72" alt="">
+         <img v-for="(photo, index) in JSON.parse(questions[currentQuestion]?.img)" :key="index" :src="photo" class="object-contain max-h-72" :alt="photo">
       </div>
 
       <div class="flex flex-col items-center gap-2">
@@ -18,11 +18,13 @@
       </div>
    </div>
    <p v-else class="text-2xl text-red-900">This test don't have any questions</p>
-  <button @click="router.push('/home')" class="bg-indigo-900 text-white p-3 rounded-xl text-2xl absolute bottom-8">Back to menu</button>
+  <button @click="router.push('/home')" class="bg-indigo-900 text-white p-3 rounded-xl text-2xl">Back to menu</button>
   </homeTemplate>
   
   <homeTemplate v-else>
    <p v-if="!isLoadScreen" class="text-2xl text-red-900">Test probably don't exist</p>
+  <button @click="router.push('/home')" class="bg-indigo-900 text-white p-3 rounded-xl text-2xl">Back to menu</button>
+
   </homeTemplate>
 
   <loadScreen v-if="isLoadScreen" />

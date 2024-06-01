@@ -5,7 +5,7 @@
        <div class="flex flex-col items-center gap-4 w-full">
          <slot></slot>
        </div>
-       <p class="text-sm text-gray-500">©2024 (v0.1) andrronov</p>
+       <p class="text-sm text-gray-500">©2024 (v0.1.1) andrronov</p>
       </div>
      </div>
 </template>

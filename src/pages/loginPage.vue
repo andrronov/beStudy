@@ -15,7 +15,7 @@
         <div>
           <label class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
           <div class="mt-2">
-            <input v-model="form.loginEmail" id="email_input" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <input v-model="form.regEmail" id="email_input" name="email" type="email" autocomplete="email" required="" class="block w-full rounded-md border-0 py-1.5 px-0.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
           </div>
         </div>
 
@@ -32,7 +32,7 @@
         </div>
 
         <div>
-          <button @click.prevent="loginUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 px-0.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
+          <button @click.prevent="loginUser" id="signinButton" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
         </div>
         <p v-if="errorLog" class="text-red-600 text-center">{{ errorLog }}</p>
       </form>
@@ -89,7 +89,7 @@
         </div>
 
         <div>
-          <button @click.prevent="signUpUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 px-0.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</button>
+          <button @click.prevent="signUpUser" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</button>
         </div>
         <p v-if="errorLog" class="text-red-600 text-center p-2 bg-gray-100/70">{{ errorLog }}</p>
       </form>
@@ -116,7 +116,6 @@ const isLogin = ref(true);
 const form = reactive({
   regEmail: null,
   regPassword: null,
-  loginEmail: null,
   loginPassword: null,
   userName: null,
 })
@@ -155,12 +154,12 @@ async function signUpUser(){
 }
 
 async function loginUser(){
-  if(form.loginEmail && form.loginPassword){
+  if(form.regEmail && form.loginPassword){
     errorLog.value = null
     isLoadScreen.value = true
     const { data, error } = await supabase.auth.signInWithPassword(
       {
-        email: form.loginEmail,
+        email: form.regEmail,
         password: form.loginPassword
       }
     )
