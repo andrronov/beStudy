@@ -21,9 +21,9 @@
                 <div class="flex flex-col gap-2">
                   <input class="my-4 cursor-pointer" type="file" multiple />
                   <loading class="my-4" v-if="imgLoad" />
-                  <img v-for="(photo, index) in JSON.parse(form.photo)" :key="index" :src="photo" class="my-4 max-h-16 object-contain" :alt="photo">
+                  <img v-for="(photo, index) in form.photo" :key="index" :src="photo" class="my-4 max-h-16 object-contain" :alt="photo">
                 </div>
-                <button @click="form.photo = null" type="button" class="rounded-xl p-2 bg-indigo-600 text-white text-xl">Delete</button>
+                <button @click="form.photo = []" type="button" class="rounded-xl p-2 bg-indigo-600 text-white text-xl">Delete</button>
                </label>
             </form>
             <!-- <input type="file" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mt-4" /> -->
@@ -117,13 +117,14 @@ async function getTestType(){
 
 async function addPhoto(ev){
   imgLoad.value = true
-  const photo = ev.target.files
-  for(let i = 0; i < Object.values(photo).length; i++){
+  const photos = ev.target.files
+  for(let i = 0; i < Object.values(photos).length; i++){
      const newPhotoName = Date.now() + (Math.random() * 1000).toFixed()
-     const {data, error} = await supabase.storage.from('photos').upload(newPhotoName, Object.values(photo)[i])
-     if(!error){
+     const {data, error} = await supabase.storage.from('photos').upload(newPhotoName, Object.values(photos)[i])
+     if(data && !error){
        form.photo.push('https://rjuhycmfqdscizgebqvt.supabase.co/storage/v1/object/public/photos/' + data.path)
      }
+     console.log(error)
   }
   if(form.photo){
     imgLoad.value = false
@@ -167,7 +168,11 @@ async function getQuestion(qID){
    if(!error){
       form.answer = data[0].answer
       form.question = data[0].question
-      form.photo = data[0].img
+      if(JSON.parse(data[0].img)){
+         form.photo = JSON.parse(data[0].img)
+      } else {
+         form.photo = []
+      }
       isModalEditQuestion.value = true
       loadingScreen.value = false
    } else {
