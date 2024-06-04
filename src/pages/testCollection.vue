@@ -73,8 +73,8 @@ async function deleteTest(id) {
       loadingScreen.value = true
       const {data, error} = await supabase.from('tests').delete().eq('id', id)
       if(!error) {
-         loadingScreen.value = false
          getCollection()
+         loadingScreen.value = false
       } else {
          loadingScreen.value = false
          errorLog.value = error
