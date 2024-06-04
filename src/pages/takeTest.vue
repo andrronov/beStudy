@@ -1,5 +1,6 @@
 <template>
-   <modalComponent v-if="photoModal" @close-modal="photoModal = null">
+   <modalComponent v-if="photoModal">
+      <p @click="photoModal = null" class="absolute right-5 top-5 p-1.5 bg-white text-black">X</p>
       <img :src="photoModal" alt="answer picture" class="w-full h-full object-contain">
    </modalComponent>
 
