@@ -13,7 +13,7 @@
             </div>
             <div class="flex flex-row items-center justify-between w-full">
                <p>{{ test.profiles.username }}</p>
-               <p>ID: {{ test.id }}</p>
+               <p>ID: {{ test.id }}, type: {{test.is_default ? 'training' : 'full power'}}</p>
             </div>
          </div>
          <div class="flex flex-row items-center rounded-xl rounded-t-none border-indigo-500 border-2 justify-between w-full">

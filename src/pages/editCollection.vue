@@ -45,6 +45,7 @@
             <div class="flex flex-col items-start">
                <p>q: {{ question.question }}</p>
                <p>a: {{ question.answer }}</p>
+               <p>pics: {{ question?.img ? JSON.parse(question.img).length : 0 }}</p>
             </div>
             <img :src="question.img" class="w-auto h-14 object-contain" alt="">
          </div>
