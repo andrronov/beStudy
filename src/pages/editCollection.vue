@@ -14,24 +14,29 @@
          </div>
          <div class="w-full text-center flex flex-col items-center gap-2">
             <label for="answer" class="text-xl font-semibold">Answer</label>
-            <textarea v-model="form.answer" rows="3" type="text" class="w-full rounded-xl p-1 text-black" />
+            <textarea v-model="form.answer" rows="3" type="text" class="w-full rounded-xl p-1 text-black" :disabled="!isTestDefault" />
+            
+            <disclosureDropdown :q_a="null" class="mt-4">
+               aaa
+            </disclosureDropdown>
+            
             <form @change="addPhoto" enctype="multipart/form-data" class="w-full flex flex-col mt-4">
                <label for="photo" class="text-xl font-semibold bg-gray-100/25 rounded-xl">
                 Photo
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col items-center gap-2 mt-2">
                   <input class="my-4 cursor-pointer" type="file" multiple />
                   <loading class="my-4" v-if="imgLoad" />
                   <img v-for="(photo, index) in form.photo" :key="index" :src="photo" class="my-4 max-h-16 object-contain" :alt="photo">
                 </div>
-                <button @click="form.photo = []" type="button" class="rounded-xl p-2 bg-indigo-600 text-white text-xl">Delete</button>
+                <button @click="form.photo = []" :disabled="form.photo.length < 1" type="button" class="rounded-xl p-2 bg-indigo-600 text-white mb-2 text-xl">Delete</button>
                </label>
             </form>
             <!-- <input type="file" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mt-4" /> -->
          </div>
-         <button v-if="isModalAddQuestion" @click="addQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Add question</button>
+         <button v-if="isModalAddQuestion" @click="addQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Done</button>
          <button v-else @click="editQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Edit question</button>
          <p v-bind="errorLog" class="text-lg text-red-500">{{ errorLog }}</p>
-         <button @click="isModalAddQuestion = false, isModalEditQuestion = false, form.answer = '', form.question = '', form.photo = null" class="rounded-xl p-2 bg-indigo-600 text-white text-xl absolute bottom-6">Back</button>
+         <button @click="isModalAddQuestion = false, isModalEditQuestion = false, form.answer = '', form.question = '', form.photo = null" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mb-2">Back</button>
       </div>
 
    </modalComponent>
@@ -81,6 +86,7 @@ import { supabase } from '../lib/supabaseClient';
 import { onMounted, ref, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import errorScreen from '../components/UI/errorScreen.vue';
+import disclosureDropdown from '../components/UI/disclosureDropdown.vue'
 
 const form = reactive({
    question: '',
@@ -110,7 +116,6 @@ async function getQuestions(){
       errorLog.value = error
    }
 }
-
 async function getTestType(){
    const {data, error} = await supabase.from('tests').select('is_default').eq('id', route.params.id)
    isTestDefault.value = data[0].is_default
@@ -196,6 +201,11 @@ async function editQuestion(){
 onMounted(() => {
    getQuestions()
    getTestType()
+
+   const qst_ans = {
+      questions: ['aaa?', 'bbb?', 'ccc?'],
+      answer_idx: 2
+   }
 })
 </script>
 
