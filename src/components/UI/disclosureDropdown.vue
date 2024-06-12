@@ -16,12 +16,14 @@
          </DisclosurePanel>
        </Disclosure>
      </div>
+
+
      <div v-else class="mx-auto w-full max-w-7xl rounded-2xl bg-white">
        <Disclosure v-slot="{ open }">
          <DisclosureButton
            class="flex w-full justify-between rounded-lg bg-indigo-100 px-4 py-2 text-left text-sm font-medium text-indigo-900 hover:bg-indigo-200 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/75"
          >
-           <span>Add answer options</span>
+           <span>{{ props.title }}</span>
            <ChevronUpIcon
              :class="open ? 'rotate-180 transform' : ''"
              class="h-5 w-5 text-indigo-500"
@@ -43,6 +45,10 @@
    q_a: {
       type: Array,
       default: [{q: "What is your refund policy?", a: "If you're unhappy with your purchase for any reason, email us within 90 days and we'll refund you in full, no questions asked."}]
+   },
+   title: {
+      type: String,
+      default: 'Add answer options'
    }
  })
  </script>

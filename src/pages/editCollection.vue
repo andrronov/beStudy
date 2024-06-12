@@ -14,10 +14,18 @@
          </div>
          <div class="w-full text-center flex flex-col items-center gap-2">
             <label for="answer" class="text-xl font-semibold">Answer</label>
-            <textarea v-model="form.answer" rows="3" type="text" class="w-full rounded-xl p-1 text-black" :disabled="!isTestDefault" />
+            <textarea v-model="form.answer" :rows="isTestDefault ? '3' : '1'" type="text" class="w-full rounded-xl p-1 text-black" :disabled="!isTestDefault" />
             
-            <disclosureDropdown :q_a="null" class="mt-4">
-               aaa
+            <disclosureDropdown v-if="!isTestDefault" :q_a="null" :title="'Add answer options add mark the right answer'" class="mt-4">
+               <div class="flex flex-row items-center justify-between w-full my-4 gap-3">
+                  <input @keydown.enter="addAnswerOption" v-model="answerOptions.answerInput" type="text" class="w-full rounded-xl p-1 text-black border border-indigo-600 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/75" />
+                  <!-- <input type="checkbox" class="w-1/12"> -->
+                  <button @click="addAnswerOption" class="rounded-xl p-px bg-indigo-600 text-white text-xl w-fit min-w-12 hover:bg-indigo-700">+</button>
+               </div>
+               <p v-if="errorLog" class="text-lg text-red-500">{{ errorLog }}</p>
+
+
+               <radioGroup :array="answerOptions.answers" v-model="answerOptions.answer_idx" @select-answer="selectAnswer" />
             </disclosureDropdown>
             
             <form @change="addPhoto" enctype="multipart/form-data" class="w-full flex flex-col mt-4">
@@ -87,11 +95,17 @@ import { onMounted, ref, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import errorScreen from '../components/UI/errorScreen.vue';
 import disclosureDropdown from '../components/UI/disclosureDropdown.vue'
+import radioGroup from '../components/UI/radioGroup.vue'
 
 const form = reactive({
    question: '',
    answer: '',
    photo: []
+})
+const answerOptions = reactive({
+      answers: [],
+      answer_idx: null,
+      answerInput: ''
 })
 const router = useRouter()
 const route = useRoute()
@@ -198,17 +212,20 @@ async function editQuestion(){
    }
 }
 
+function addAnswerOption(){
+   if(answerOptions.answerInput){
+      answerOptions.answers.push(answerOptions.answerInput)
+      answerOptions.answerInput = ''
+   }
+}
+
+function selectAnswer(idx){
+   answerOptions.answer_idx = idx
+   form.answer = answerOptions.answers[idx]
+}
+
 onMounted(() => {
    getQuestions()
    getTestType()
-
-   const qst_ans = {
-      questions: ['aaa?', 'bbb?', 'ccc?'],
-      answer_idx: 2
-   }
 })
 </script>
-
-<style>
-
-</style>
