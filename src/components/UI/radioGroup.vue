@@ -10,7 +10,8 @@
              :key="index"
              :value="plan"
              v-slot="{ active, checked }"
-             @click="$emit('selectAnswer', index)"
+             @click="$emit('selectAnswer', plan)"
+             @dblclick="$emit('deleteAnswer', index)"
            >
              <div
                :class="[
@@ -53,7 +54,7 @@
                  </div>
                </div>
              </div>
-           </RadioGroupOption>
+            </RadioGroupOption>
          </div>
        </RadioGroup>
      </div>

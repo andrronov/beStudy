@@ -50,7 +50,7 @@
     <button @click="router.push('/collection')" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Edit collections</button>
     <button @click="isTakeTest = true" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Take a test</button>
 
-    <button @click="logOutUser" class="bg-indigo-900 text-white p-2 rounded-xl text-xl absolute bottom-8">Log out</button>
+    <button @click="logOutUser" class="bg-indigo-900 text-white p-2 rounded-xl text-xl">Log out</button>
 
   </homeTemplate>
 
@@ -109,7 +109,12 @@ async function logOutUser(){
 }
 
 async function getUserName(){
-  userName.value = (await supabase.auth.getUser()).data.user.user_metadata.username
+  if(localStorage.getItem('username')){
+    userName.value = localStorage.getItem('username')
+    } else {
+      userName.value = (await supabase.auth.getUser()).data.user.user_metadata.username
+      localStorage.setItem('username', userName.value)
+  }
 }
 
 onBeforeMount(() => {

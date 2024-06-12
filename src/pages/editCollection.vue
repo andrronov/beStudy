@@ -7,7 +7,7 @@
       </div> -->
 
       <!-- EDIT QUESTION -->
-      <div class="flex flex-col w-full max-w-7xl px-2 items-center h-full justify-center gap-5 overflow-y-auto">
+      <div class="flex flex-col w-full max-w-7xl px-2 items-center h-full justify-center gap-5">
          <div class="w-full text-center flex flex-col items-center gap-2">
             <label for="question" class="text-xl font-semibold">Question</label>
             <textarea v-model="form.question" rows="2" type="text" class="w-full rounded-xl p-1 text-black" />
@@ -18,17 +18,16 @@
             
             <disclosureDropdown v-if="!isTestDefault" :q_a="null" :title="'Add answer options add mark the right answer'" class="mt-4">
                <div class="flex flex-row items-center justify-between w-full my-4 gap-3">
-                  <input @keydown.enter="addAnswerOption" v-model="answerOptions.answerInput" type="text" class="w-full rounded-xl p-1 text-black border border-indigo-600 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/75" />
-                  <!-- <input type="checkbox" class="w-1/12"> -->
+                  <input @keydown.enter="addAnswerOption" v-model="answerOptions.answerInput" type="text" placeholder="type answer variant" class="w-full rounded-xl p-1 text-black border border-indigo-600 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/75" />
                   <button @click="addAnswerOption" class="rounded-xl p-px bg-indigo-600 text-white text-xl w-fit min-w-12 hover:bg-indigo-700">+</button>
                </div>
                <p v-if="errorLog" class="text-lg text-red-500">{{ errorLog }}</p>
 
 
-               <radioGroup :array="answerOptions.answers" v-model="answerOptions.answer_idx" @select-answer="selectAnswer" />
+               <radioGroup :array="answerOptions.answers" v-model="answerOptions.right_answer" @select-answer="selectAnswer" @delete-answer="deleteAnswerOption" />
             </disclosureDropdown>
             
-            <form @change="addPhoto" enctype="multipart/form-data" class="w-full flex flex-col mt-4">
+            <form @change="addPhoto" enctype="multipart/form-data" class="w-full flex flex-col max-h-36 overflow-y-scroll mt-4">
                <label for="photo" class="text-xl font-semibold bg-gray-100/25 rounded-xl">
                 Photo
                 <div class="flex flex-col items-center gap-2 mt-2">
@@ -36,7 +35,7 @@
                   <loading class="my-4" v-if="imgLoad" />
                   <img v-for="(photo, index) in form.photo" :key="index" :src="photo" class="my-4 max-h-16 object-contain" :alt="photo">
                 </div>
-                <button @click="form.photo = []" :disabled="form.photo.length < 1" type="button" class="rounded-xl p-2 bg-indigo-600 text-white mb-2 text-xl">Delete</button>
+                <button @click="form.photo = []" :disabled="form.photo?.length < 1" type="button" class="rounded-xl p-2 bg-indigo-600 text-white mb-2 text-xl">Delete</button>
                </label>
             </form>
             <!-- <input type="file" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mt-4" /> -->
@@ -44,7 +43,7 @@
          <button v-if="isModalAddQuestion" @click="addQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Done</button>
          <button v-else @click="editQuestion" class="rounded-xl p-2 bg-white text-indigo-600 text-2xl">Edit question</button>
          <p v-bind="errorLog" class="text-lg text-red-500">{{ errorLog }}</p>
-         <button @click="isModalAddQuestion = false, isModalEditQuestion = false, form.answer = '', form.question = '', form.photo = null" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mb-2">Back</button>
+         <button @click="isModalAddQuestion = false, isModalEditQuestion = false, form.answer = '', form.question = '', form.photo = [], answerOptions.answers = [], answerOptions.right_answer = null" class="rounded-xl p-2 bg-indigo-600 text-white text-xl mb-2">Back</button>
       </div>
 
    </modalComponent>
@@ -52,8 +51,8 @@
   <homeTemplate :title="'Edit'">
    <loading v-if="isLoading" />
 
-   <div v-if="typeof questions == 'object' && questions?.length > 0 || isLoading" class="w-full max-w-7xl flex flex-col overflow-y-auto items-center gap-5 px-2">
-      <div v-for="question in questions" :key="question.id" class="w-full rounded-xl flex flex-col items-center justify-between bg-gradient-to-b text-white from-indigo-700 via-blue-500 to-indigo-600">
+   <div v-if="typeof questions == 'object' && questions?.length > 0 || isLoading" class="w-full flex flex-col items-center gap-5 px-2">
+      <div v-for="question in questions" :key="question.id" class="w-full max-w-7xl rounded-xl flex flex-col items-center justify-between bg-gradient-to-b text-white from-indigo-700 via-blue-500 to-indigo-600">
          <div class="flex flex-row w-full items-center justify-between p-2 text-xl">
             <div class="flex flex-col items-start">
                <p>q: {{ question.question }}</p>
@@ -102,9 +101,9 @@ const form = reactive({
    answer: '',
    photo: []
 })
-const answerOptions = reactive({
+let answerOptions = reactive({
       answers: [],
-      answer_idx: null,
+      right_answer: null,
       answerInput: ''
 })
 const router = useRouter()
@@ -152,16 +151,20 @@ async function addPhoto(ev){
 }
 
 async function addQuestion(){
+   if(!form.question || !form.answer) {
+      errorLog.value = 'Fill in the inputes'
+      throw Error('Fill in the inputes')
+   }
    const user = await supabase.auth.getSession()
    loadingScreen.value = true
-   const {data, error} = await supabase.from('qstn_answr').insert({question: form.question, answer: form.answer, img: JSON.stringify(form.photo), test_id: route.params.id, author: user.data.session.user.id})
+   const {data, error} = await supabase.from('qstn_answr').insert({question: form.question, answer: form.answer, variants: JSON.stringify(answerOptions), img: JSON.stringify(form.photo), test_id: route.params.id, author: user.data.session.user.id})
    if(!error){
       loadingScreen.value = false
       isModalAddQuestion.value = false
       getQuestions()
       form.question = '',
       form.answer = '',
-      form.photo = null
+      form.photo = []
    } else {
       loadingScreen.value = false
       errorLog.value = error
@@ -184,10 +187,11 @@ async function deleteQuestion(qID){
 async function getQuestion(qID){
    loadingScreen.value = true
    questionId.value = qID
-   const {data, error} = await supabase.from('qstn_answr').select('question, answer, img').eq('id', qID)
+   const {data, error} = await supabase.from('qstn_answr').select('question, answer, img, variants').eq('id', qID)
    if(!error){
       form.answer = data[0].answer
       form.question = data[0].question
+      answerOptions = JSON.parse(data[0]?.variants)
       if(JSON.parse(data[0].img)){
          form.photo = JSON.parse(data[0].img)
       } else {
@@ -201,9 +205,21 @@ async function getQuestion(qID){
    }
 }
 async function editQuestion(){
+   if(!form.question || !form.answer) {
+      errorLog.value = 'Fill in the inputes'
+      throw Error('Fill in the inputes') }
    loadingScreen.value = true
-   const {data, error} = await supabase.from('qstn_answr').update({question: form.question, answer: form.answer, img: form.photo}).eq('id', questionId.value)
+   const {data, error} = await supabase.from('qstn_answr').update({question: form.question, answer: form.answer, variants: JSON.stringify(answerOptions), img: form.photo}).eq('id', questionId.value)
    if(!error){
+      getQuestions()
+      form.question = '',
+      form.answer = '',
+      form.photo = []
+      answerOptions = {
+      answers: [],
+      right_answer: null,
+      answerInput: ''
+}
       loadingScreen.value = false
       isModalEditQuestion.value = false
    }else{
@@ -219,9 +235,16 @@ function addAnswerOption(){
    }
 }
 
-function selectAnswer(idx){
-   answerOptions.answer_idx = idx
-   form.answer = answerOptions.answers[idx]
+function selectAnswer(ans){
+   answerOptions.right_answer = ans
+   form.answer = ans
+}
+
+function deleteAnswerOption(idx){
+   const isAgree = confirm('Delete question?')
+   if(isAgree){
+      answerOptions.answers.splice(idx, 1)
+   }
 }
 
 onMounted(() => {

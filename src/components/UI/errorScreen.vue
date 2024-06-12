@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+  <div class="z-50 fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
     <div class="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
       <p class="text-red-500 font-semibold">Error!</p>
       <p>{{ props.error }}</p>

@@ -1,5 +1,5 @@
 <template>
-   <div class="w-screen h-fit min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-indigo-200">
+   <div class="w-screen h-fit overflow-x-hidden min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-indigo-200">
       <div class="max-w-7xl h-screen mx-auto flex flex-col items-center gap-8 justify-between pt-5">
        <h1 class="text-3xl sm:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r to-blue-500 via-purple-600 from-indigo-700">{{ props.title }}</h1>
        <div class="flex flex-col items-center gap-4 w-full">
