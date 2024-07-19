@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test-ui": "vitest --ui"
+    "test-ui": "vitest --ui",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.22",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
+    "@vitest/coverage-v8": "^2.0.3",
     "@vitest/ui": "^1.6.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.18",

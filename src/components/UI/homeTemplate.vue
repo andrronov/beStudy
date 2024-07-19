@@ -30,7 +30,7 @@ function checkLoggedIn(){
   supabase.auth.onAuthStateChange((_, _session) => {
     session.value = _session
     if(!session.value){
-    router.push('login')
+    router.push('/login')
   }
   })
 }

@@ -102,9 +102,10 @@ async function createTest(){
 async function logOutUser(){
   const isAgreed = confirm('Are you sure you want to log out?')
   if(isAgreed){
+    localStorage.clear()
     isLoadScreen.value = true
     await supabase.auth.signOut({ scope: 'local' })
-    router.push('login')
+    router.push('/login')
   }
 }
 
