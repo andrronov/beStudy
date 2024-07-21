@@ -183,10 +183,6 @@ async function loginUser(){
     }, 10000)
   }
 }
-
-onMounted(async() => {
-  console.log(await supabase.auth.getSession());
-})
 </script>
 
 <style>

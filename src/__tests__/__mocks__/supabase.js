@@ -11,12 +11,8 @@ export const supabaseMock = {
       data: null,
       error: 'API Error'
     }),
-    getUser: vi.fn().mockResolvedValue({
-      data: { user: {user_metadata: { username: 'Test'}}}
-    }),
-    getSession: vi.fn().mockResolvedValue({
-      data: { session: { session: 'session' } }
-    }),
+    getUser: vi.fn(),
+    getSession: vi.fn(),
     onAuthStateChange: vi.fn().mockResolvedValue({
       data: {subscription: 'subscription'}
     })

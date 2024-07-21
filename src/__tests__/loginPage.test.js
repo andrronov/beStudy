@@ -41,8 +41,7 @@ describe('Testing all from login/signup page', () => {
     });
 
     test('login + router logic', async () => {
-      const signInMock = supabaseMock.auth.signInWithPassword
-      signInMock.mockResolvedValue({
+      const signInMock = supabaseMock.auth.signInWithPassword.mockResolvedValue({
         data: { user: { id: 'e6f63a62-e7ff-4a36-a7dd-ae6e1fec5d26' } },
         error: null
       })
