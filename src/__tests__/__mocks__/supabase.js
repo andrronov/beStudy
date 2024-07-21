@@ -15,17 +15,8 @@ export const supabaseMock = {
       data: { user: {user_metadata: { username: 'Test'}}}
     }),
     getSession: vi.fn().mockResolvedValue({
-      data: { session: { session: 'session' } } // Обратите внимание на структуру данных
+      data: { session: { session: 'session' } }
     }),
-    // onAuthStateChange: vi.fn().mockImplementation((callback) => {
-    //   // Вызываем callback с мокированным значением
-    //   const mockSession = { user: { user_metadata: { username: 'Test' } } };
-    //   callback(null, mockSession); // Вызываем callback с null для ошибки и мок-сессией
-    //   return { subscription: 'mock-subscription' }; // Возвращаем объект подписки
-    // })
-    // getSession: vi.fn().mockResolvedValue({
-    //   session: {session: 'session'}
-    // }),
     onAuthStateChange: vi.fn().mockResolvedValue({
       data: {subscription: 'subscription'}
     })

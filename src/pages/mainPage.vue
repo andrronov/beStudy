@@ -110,18 +110,25 @@ async function logOutUser(){
   }
 }
 
-function getUserName(){
+async function getUserName(){
   if(localStorage.getItem('username')) userName.value = localStorage.getItem('username')
   else {
-      try {
-        supabase.auth.getUser().then(res => {
-          userName.value = res.data.user.user_metadata.username
-          userName.value ? localStorage.setItem('username', userName.value) : errorLog.value = 'Failed to fetch user response'
-        })
-      } catch (err) {
-        console.error('Error:', err)
-        errorLog.value = `Error: ${err}`
-      }
+    try {
+      const data = await supabase.auth.getUser()
+      userName.value = data.data.user.user_metadata.username
+      localStorage.setItem('username', userName.value)
+    } catch (err) {
+      console.error('Error during getUser: ', err)
+      errorLog.value = `Error during getUser: ${err}`
+    }
+        // supabase.auth.getUser().then(res => {
+        //   userName.value = res.data.user.user_metadata.username
+        //   userName.value ? localStorage.setItem('username', userName.value) : errorLog.value = 'Failed to fetch user response'
+        // })
+      // } catch (err) {
+      //   console.error('Error:', err)
+      //   errorLog.value = `Error: ${err}`
+      // }
   }
 }
 

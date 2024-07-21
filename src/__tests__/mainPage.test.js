@@ -5,10 +5,6 @@ import { routerMock } from "./__mocks__/vue-router"
 import { supabaseMock } from "./__mocks__/supabase"
 import mainPage from '../pages/mainPage.vue'
 
-// vi.mock('../lib/supabaseClient.js', () => ({
-//    supabase: supabaseMock
-//  }))
-
 describe('testing main page', () => {
    let wrapper
 
@@ -31,6 +27,16 @@ describe('testing main page', () => {
       vi.resetAllMocks()
    })
 
+   test('username display taken from db and write it in localStorage', async() => {
+      const getUser = supabaseMock.auth.getUser
+      const getSession = supabaseMock.auth.getSession
+      expect(getUser).toHaveBeenCalledTimes(1)
+      expect(getSession).toHaveBeenCalledTimes(1)
+      expect(routerMock.push).not.toBeCalled()
+      expect(wrapper.vm.userName).toBe('Test');
+      expect(localStorage.getItem('username')).toBe('Test');
+   })
+   
    test('username display when its on localStorage', async() => {
       localStorage.setItem('username', 'Test')
       const newWrapper = mount(mainPage)
@@ -39,22 +45,7 @@ describe('testing main page', () => {
       expect(username.text()).toBe('Welcome, Test!')
    })
 
-   test('username display taken from db and write it in localStorage', async() => {
-      // TO FIX !
-      console.log('-----------', localStorage.getItem('username'));
-      const getUser = supabaseMock.auth.getUser
-      getUser.mockResolvedValue({
-         data: { user: {user_metadata: { username: 'Test'}}}
-       });
-      const getSession = supabaseMock.auth.getSession
-      getSession.mockResolvedValue(getSession)
-      expect(getUser).toHaveBeenCalledTimes(1)
-      await nextTick();
-      expect(routerMock.push).not.toBeCalled()
-      expect(wrapper.vm.userName).toBe('Test');
-      expect(localStorage.getItem('username')).toBe('Test');
-   })
-
+   // router push when no session
    // проверить отображение пропсов
    // sign out
 })
