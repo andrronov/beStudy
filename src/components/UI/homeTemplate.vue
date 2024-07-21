@@ -18,22 +18,33 @@ import { onMounted, ref } from 'vue';
 const router = useRouter()
 const session = ref()
 
+async function checkLoggedIn() {
+     try {
+       const { data } = await supabase.auth.getSession();
+       session.value = data.session;
+       console.log(data);
+       if (!session.value) router.push('login');
+     } catch (error) {
+       console.error('Error fetching session:', error);
+     }
 
-function checkLoggedIn(){
-  supabase.auth.getSession().then(({ data }) => {
-    session.value = data.session
-    if(!session.value){
-    router.push('login')
-  }
-  })
+     supabase.auth.onAuthStateChange((_, _session) => {
+       session.value = _session;
+       if (!session.value) router.push('/login');
+     });
+   }
+// function checkLoggedIn(){
+//   supabase.auth.getSession().then(({ data }) => {
+//     session.value = data.session
+//     console.log(data);
+//     if(!session.value) router.push('login')
+//   })
 
-  supabase.auth.onAuthStateChange((_, _session) => {
-    session.value = _session
-    if(!session.value){
-    router.push('/login')
-  }
-  })
-}
+//   supabase.auth.onAuthStateChange((_, _session) => {
+//     session.value = _session
+//     if(!session.value) router.push('/login')
+//   })
+// }
 onMounted(() => {
   checkLoggedIn()
 })

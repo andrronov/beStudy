@@ -45,13 +45,14 @@
   </modalComponent>
 
   <homeTemplate :title="'beStudy'" class="text-xl sm:text-2xl">
-    <p class="mb-8">Welcome, {{ userName || '... ' }}!</p>
+    <p class="mb-8 username">Welcome, {{ userName || '... ' }}!</p>
     <button @click="isCreateTest = true" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Create collection</button>
     <button @click="router.push('/collection')" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Edit collections</button>
     <button @click="isTakeTest = true" class="px-3 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Take a test</button>
 
     <button @click="logOutUser" class="bg-indigo-900 text-white p-2 rounded-xl text-xl">Log out</button>
 
+    <p v-if="errorLog" class="text-red-500">{{errorLog}}</p>
   </homeTemplate>
 
   <loadScreen v-if="isLoadScreen" />
@@ -109,12 +110,18 @@ async function logOutUser(){
   }
 }
 
-async function getUserName(){
-  if(localStorage.getItem('username')){
-    userName.value = localStorage.getItem('username')
-    } else {
-      userName.value = (await supabase.auth.getUser()).data.user.user_metadata.username
-      localStorage.setItem('username', userName.value)
+function getUserName(){
+  if(localStorage.getItem('username')) userName.value = localStorage.getItem('username')
+  else {
+      try {
+        supabase.auth.getUser().then(res => {
+          userName.value = res.data.user.user_metadata.username
+          userName.value ? localStorage.setItem('username', userName.value) : errorLog.value = 'Failed to fetch user response'
+        })
+      } catch (err) {
+        console.error('Error:', err)
+        errorLog.value = `Error: ${err}`
+      }
   }
 }
 

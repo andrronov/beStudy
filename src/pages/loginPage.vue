@@ -1,5 +1,5 @@
 <template>
-  <loadScreen v-if="isLoadScreen" />
+  <loadScreen v-if="isLoadScreen" id="loadScreen" />
 
   
   <div class="w-full h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-200 via-purple-300 to-indigo-400">
@@ -154,13 +154,13 @@ async function loginUser(){
   if(form.regEmail && form.loginPassword){
     errorLog.value = null
     isLoadScreen.value = true
-    const { data, error } = await supabase.auth.signInWithPassword(
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword(
       {
         email: form.regEmail,
         password: form.loginPassword
       }
     )
-
     if(!error){
       isLoadScreen.value = false
       router.push('/home')
@@ -170,6 +170,11 @@ async function loginUser(){
       setTimeout(() => {
         errorLog.value = null
       }, 5000)
+    }
+    } catch (err) {
+      isLoadScreen.value = false
+     console.error('Error during sign in:', err);
+     errorLog.value = 'An unexpected error occurred'
     }
   } else {
     errorLog.value = 'Fill in all the fields'
