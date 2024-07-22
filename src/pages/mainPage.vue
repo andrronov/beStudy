@@ -33,7 +33,7 @@
 
   <modalComponent v-if="isTakeTest">
     <div class="w-full px-2 flex flex-col xs:flex-row items-center gap-8">
-      <div @click="router.push('/collection')" class="p-4 rounded-xl border-2 border-white w-full flex justify-center items-center h-32 hover:bg-indigo-950">
+      <div @click="router.push('/collection')" class="p-4 rounded-xl cursor-pointer border-2 border-white w-full flex justify-center items-center h-32 hover:bg-indigo-950">
         <p class="text-xl">From your collection</p>
       </div>
       <div class="p-4 rounded-xl border-2 border-white w-full h-32 text-center hover:bg-indigo-950">

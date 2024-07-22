@@ -9,11 +9,11 @@
             <div class="flex flex-row items-center justify-between w-full">
                <p class="">{{ test.qstn_answr.length }} questions</p>
                <p>{{ useTimeAgo(test.created_at) }}</p>
-               
             </div>
+            <p class="text-center">ID: {{ test.id }}</p>
             <div class="flex flex-row items-center justify-between w-full">
                <p>{{ test.profiles.username }}</p>
-               <p>ID: {{ test.id }}, type: {{test.is_default ? 'training' : 'full power'}}</p>
+               <p>type: {{test.is_default ? 'training' : 'full power'}}</p>
             </div>
          </div>
          <div class="flex flex-row items-center rounded-xl rounded-t-none border-indigo-500 border-2 justify-between w-full">

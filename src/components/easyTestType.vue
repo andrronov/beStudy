@@ -1,7 +1,7 @@
 <template>
    <div v-if="questions.length > 0" class="flex flex-col items-center justify-between h-full w-full min-h-96 px-2 overflow-y-auto">
       <p class="text-2xl text-indigo-950 font-semibold">{{questions[currentQuestion]?.question}}</p>
-      <div @click.capture="$emit('openAnswer')" id="answer" class="flex z-30 flex-col items-center gap-4 w-full" :class="isVisible ? 'blur-none' : 'blur-3xl bg-gray-800 min-h-44'">
+      <div @click.capture="$emit('openAnswer')" id="answer" class="flex z-30 flex-col items-center gap-4 w-full" :class="isVisible ? 'blur-none' : 'blur-3xl bg-indigo-800 min-h-44'">
          <p class="text-lg font-medium">{{questions[currentQuestion]?.answer}}</p>
          <div v-if="isVisible" class="mb-4 z-20 mt-2 flex flex-row items-center overflow-x-auto">
             <img @click.stop="$emit('openPhoto', photo)" v-for="(photo, index) in JSON.parse(questions[currentQuestion]?.img)" :key="index" :src="photo" class="object-contain max-h-72 mx-2" :alt="photo">
